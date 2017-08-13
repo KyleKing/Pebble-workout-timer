@@ -14,7 +14,7 @@ var userSchema = new mongoose.Schema({
             type: {
                 type: 'String',
                 enum: {
-                  values: 'reps time'.split(' '),
+                    values: 'reps time'.split(' '),
                 },
                 required: true
             },
@@ -28,7 +28,7 @@ var userSchema = new mongoose.Schema({
 userSchema.set('autoIndex', false);
 
 userSchema.statics.findOrCreate = function(parameters, callback){
-    mongoose.model('User').findOne({"id": parameters.id}, function(err, user){
+    mongoose.model('User').findOne({'id': parameters.id}, function(err, user){
         if (err) {
             callback(err);
         } else if (user) {
@@ -46,7 +46,7 @@ userSchema.statics.findOrCreate = function(parameters, callback){
 * save all workouts to the user, maintain dates completed
 */
 userSchema.method('saveWorkouts', function(workouts, callback){
-    console.log("saving user workouts..====================");
+    console.log('saving user workouts..====================');
 
     // for i in this.workouts {
     //     this.workouts.[i].name =
@@ -55,7 +55,7 @@ userSchema.method('saveWorkouts', function(workouts, callback){
 
     this.workouts = workouts;
 
-    console.log("set");
+    console.log('set');
     this.save(function(err){
         if (err) console.log(err);
         callback(err);
@@ -64,7 +64,7 @@ userSchema.method('saveWorkouts', function(workouts, callback){
 
 //mark a workout as completed
 userSchema.method('completeWorkout', function(workoutName, date, timelineId ,callback){
-    console.log("User Model -> completeWorkout");
+    console.log('User Model -> completeWorkout');
     var foundWorkout = false;
     this.lastActiveDate = Date.now();
     this.timelineId = timelineId;
@@ -76,41 +76,41 @@ userSchema.method('completeWorkout', function(workoutName, date, timelineId ,cal
             if (this.timelineId && this.timelineId != 'none') {
                 var body = this.getPinBody(workout);
                 console.log(body);
-                this.sendTimelinePin(timelineId, "Workout Finished!", workoutName, body);
+                this.sendTimelinePin(timelineId, 'Workout Finished!', workoutName, body);
             }
             this.save(callback);
         }
     }
-    if (!foundWorkout) callback("workout not found");
+    if (!foundWorkout) callback('workout not found');
 });
 
 function totalWorkoutTime(workout){
     if (workout.length <= 0) return 0;
     return workout.moves.reduce(function(total, move){
-                if (move.type === "reps") return total;
-                return move.value + total;
-            },0);
+        if (move.type === 'reps') return total;
+        return move.value + total;
+    },0);
 }
 
 function totalWorkoutReps(workout){
     if (workout.length <= 0) return 0;
     return workout.moves.reduce(function(total, move){
-                if (move.type === "time") return total;
-                return move.value + total;
-            },0);
+        if (move.type === 'time') return total;
+        return move.value + total;
+    },0);
 }
 
 // Convert secs to a string in the form "x hours and n minutes"
 function prettyTime(totalSecs){
-    if (totalSecs < 60) return totalSecs + " seconds";
+    if (totalSecs < 60) return totalSecs + ' seconds';
     var hours, mins, secs, result;
     hours = parseInt( totalSecs / 3600 ) % 24;
     mins = parseInt( totalSecs / 60 ) % 60;
     secs = totalSecs % 60;
-    hoursText = hours > 0 ? (hours +  (hours > 1 ? " hours" : " hour")) : "";
-    if (mins > 0) minsText = ((hours > 0 ? (" and " ): "") + mins + " " + (mins > 1 ? "minutes" : "minute"));
-    else minsText = "";
-    minsText =  mins > 0 ? (minsText = ((hours > 0 ? (" and " ): "") + mins + " " + (mins > 1 ? "minutes" : "minute")) ) : ("");
+    hoursText = hours > 0 ? (hours +  (hours > 1 ? ' hours' : ' hour')) : '';
+    if (mins > 0) minsText = ((hours > 0 ? (' and ' ): '') + mins + ' ' + (mins > 1 ? 'minutes' : 'minute'));
+    else minsText = '';
+    minsText =  mins > 0 ? (minsText = ((hours > 0 ? (' and ' ): '') + mins + ' ' + (mins > 1 ? 'minutes' : 'minute')) ) : ('');
 
     return hoursText + minsText;
 }
@@ -129,7 +129,7 @@ userSchema.method('timeWorkedSince', function (sinceDate) {
                 if (date < sinceDate )  return total;
                 return total + 1;
             },0);
-        console.log("timesCompeltedSince: " + timesCompletedSince);
+        console.log('timesCompeltedSince: ' + timesCompletedSince);
         totalTime += workoutTime * timesCompletedSince;
     }
     return totalTime;
@@ -144,43 +144,43 @@ userSchema.method('getPinBody', function (workout){
     var workoutTime = totalWorkoutTime(workout),
         workoutReps = totalWorkoutReps(workout),
         timeOrReps  = workoutTime > 0 ?
-                      "Workout time: " + prettyTime(workoutTime) :
-                      "Workout reps: " + workoutReps;
+            'Workout time: ' + prettyTime(workoutTime) :
+            'Workout reps: ' + workoutReps;
 
     return [
-        timeOrReps ,"\n",
-        "Times completed: ", workout.datesCompleted.length,"\n",
-        "Total time this week: ", prettyTime(this.timeWorkedSince(lastWeek))
-    ].join("");
+        timeOrReps ,'\n',
+        'Times completed: ', workout.datesCompleted.length,'\n',
+        'Total time this week: ', prettyTime(this.timeWorkedSince(lastWeek))
+    ].join('');
 });
 
 userSchema.method('sendTimelinePin', function(timelineId, title, subtitle, body){
     var timeline = new Timeline();
 
     var pin = new Timeline.Pin({
-      id: 'workout-complete-'+ this.id +"-"+parseInt(Math.random()*1000000),
-      time: new Date(),
-      duration: 10,
-      layout: new Timeline.Pin.Layout({
-        type: Timeline.Pin.LayoutType.GENERIC_PIN,
-        tinyIcon: Timeline.Pin.Icon.PIN,
-        title: title,
-        subtitle: subtitle,
-        body: body,
-        primaryColor: "#FFFFFF",
-        secondaryColor: "#AAFFFF",
-        backgroundColor: "#0000AA"
-      })
+        id: 'workout-complete-'+ this.id +'-'+parseInt(Math.random()*1000000),
+        time: new Date(),
+        duration: 10,
+        layout: new Timeline.Pin.Layout({
+            type: Timeline.Pin.LayoutType.GENERIC_PIN,
+            tinyIcon: Timeline.Pin.Icon.PIN,
+            title: title,
+            subtitle: subtitle,
+            body: body,
+            primaryColor: '#FFFFFF',
+            secondaryColor: '#AAFFFF',
+            backgroundColor: '#0000AA'
+        })
     });
 
     timeline.sendUserPin(timelineId, pin, function (err) {
-      if (err) {
-        console.log("Pin Error: ");
+        if (err) {
+            console.log('Pin Error: ');
+            console.log(timelineId);
+            return console.error(err);
+        }
         console.log(timelineId);
-        return console.error(err);
-      }
-      console.log(timelineId);
-      console.log('Pin sent successfully!');
+        console.log('Pin sent successfully!');
     });
 
 });

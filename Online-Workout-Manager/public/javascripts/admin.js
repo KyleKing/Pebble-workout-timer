@@ -1,4 +1,4 @@
-console.log(stats)
+console.log(stats);
 
 /**
 * Creates a line graph to render given stat
@@ -8,30 +8,30 @@ function renderStat(stats, limit){
     var dates = [],
         values = [];
 
-    if (limit > stats.data.length) limit = stats.data.length
+    if (limit > stats.data.length) limit = stats.data.length;
 
     var i, len, stat, date;
     len=stats.data.length;
     for (i=len-limit ; i < len; i++) {
         stat = stats.data[i];
-        console.log(i)
+        console.log(i);
         dates.push( new Date(stat.date).toDateString());
-        values.push(stat.value)
+        values.push(stat.value);
     }
 
-    var ctx = document.getElementById(stats.name).getContext("2d");
+    var ctx = document.getElementById(stats.name).getContext('2d');
 
     var data = {
         labels: dates,
         datasets: [
             {
                 label: stats.name,
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
+                fillColor: 'rgba(220,220,220,0.2)',
+                strokeColor: 'rgba(220,220,220,1)',
+                pointColor: 'rgba(220,220,220,1)',
+                pointStrokeColor: '#fff',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(220,220,220,1)',
                 data: values
             }
         ]
@@ -45,8 +45,8 @@ function renderStat(stats, limit){
 var totalUsers = stats[0];
 
 stats.map(function(stat){
-    renderStat(stat, 500)
-})
+    renderStat(stat, 500);
+});
 
 // renderStat(totalUsers, totalUsers.data.length-1)
 // var dates = [],

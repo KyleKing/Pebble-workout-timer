@@ -115,10 +115,10 @@ window['Slip'] = (function(){
     // -webkit-mess
     var testElement = document.createElement('div');
 
-    var transitionPrefix = "webkitTransition" in testElement.style ? "webkitTransition" : "transition";
-    var transformPrefix = "webkitTransform" in testElement.style ? "webkitTransform" : "transform";
-    var transformProperty = transformPrefix === "webkitTransform" ? "-webkit-transform" : "transform";
-    var userSelectPrefix = "webkitUserSelect" in testElement.style ? "webkitUserSelect" : "userSelect";
+    var transitionPrefix = 'webkitTransition' in testElement.style ? 'webkitTransition' : 'transition';
+    var transformPrefix = 'webkitTransform' in testElement.style ? 'webkitTransform' : 'transform';
+    var transformProperty = transformPrefix === 'webkitTransform' ? '-webkit-transform' : 'transform';
+    var userSelectPrefix = 'webkitUserSelect' in testElement.style ? 'webkitUserSelect' : 'userSelect';
 
     testElement.style[transformPrefix] = 'translateZ(0)';
     var hwLayerMagic = testElement.style[transformPrefix] ? 'translateZ(0) ' : '';
@@ -131,7 +131,7 @@ window['Slip'] = (function(){
 
     function Slip(container, options) {
         if ('string' === typeof container) container = document.querySelector(container);
-        if (!container || !container.addEventListener) throw new Error("Please specify DOM node to attach to");
+        if (!container || !container.addEventListener) throw new Error('Please specify DOM node to attach to');
 
         if (!this || this === window) return new Slip(container, options);
 
@@ -169,19 +169,19 @@ window['Slip'] = (function(){
     }
 
     function findIndex(target, nodes) {
-      var originalIndex = 0;
-      var listCount = 0;
+        var originalIndex = 0;
+        var listCount = 0;
 
-      for (var i=0; i < nodes.length; i++) {
-        if (nodes[i].nodeType === 1) {
-          listCount++;
-          if (nodes[i] === target.node) {
-            originalIndex = listCount-1;
-          }
+        for (var i=0; i < nodes.length; i++) {
+            if (nodes[i].nodeType === 1) {
+                listCount++;
+                if (nodes[i] === target.node) {
+                    originalIndex = listCount-1;
+                }
+            }
         }
-      }
 
-      return originalIndex;
+        return originalIndex;
     }
 
     // All functions in states are going to be executed in context of Slip object
@@ -218,15 +218,15 @@ window['Slip'] = (function(){
                 this.target.node.style[transitionPrefix] = '';
 
                 if (!this.dispatch(this.target.originalTarget, 'beforewait')) {
-                  if (this.dispatch(this.target.originalTarget, 'beforereorder')) {
-                    this.setState(this.states.reorder);
-                  }
+                    if (this.dispatch(this.target.originalTarget, 'beforereorder')) {
+                        this.setState(this.states.reorder);
+                    }
                 } else {
                     var holdTimer = setTimeout(function(){
                         var move = this.getAbsoluteMovement();
                         if (this.canPreventScrolling && move.x < 15 && move.y < 25) {
                             if (this.dispatch(this.target.originalTarget, 'beforereorder')) {
-                                console.log(this.target)
+                                console.log(this.target);
                                 this.setState(this.states.reorder);
                             }
                         }
@@ -326,9 +326,9 @@ window['Slip'] = (function(){
 
                         var direction;
                         if (dx > 0) {
-                            direction = "right";
+                            direction = 'right';
                         } else {
-                            direction = "left";
+                            direction = 'left';
                         }
 
                         if (swiped) {
@@ -346,14 +346,14 @@ window['Slip'] = (function(){
                 this.target.height = this.target.node.offsetHeight;
 
                 var nodes = this.container.childNodes;
-                console.log(nodes)
+                console.log(nodes);
                 var originalIndex = findIndex(this.target, nodes);
                 var mouseOutsideTimer;
                 var zero = this.target.node.offsetTop + this.target.height/2;
                 var otherNodes = [];
                 for(var i=0; i < nodes.length; i++) {
                     if (nodes[i].nodeType != 1 || nodes[i] === this.target.node) continue;
-                    if (/ui-li-static/.test(nodes[i].className)) continue
+                    if (/ui-li-static/.test(nodes[i].className)) continue;
                     var t = nodes[i].offsetTop;
                     nodes[i].style[transitionPrefix] = transformProperty + ' 0.2s ease-in-out';
                     otherNodes.push({
@@ -472,7 +472,7 @@ window['Slip'] = (function(){
             this.otherNodes = [];
 
             // selection on iOS interferes with reordering
-            document.addEventListener("selectionchange", this.onSelection, false);
+            document.addEventListener('selectionchange', this.onSelection, false);
 
             // cancel is called e.g. when iOS detects multitasking gesture
             this.container.addEventListener('touchcancel', this.cancel, false);
@@ -492,7 +492,7 @@ window['Slip'] = (function(){
             this.container.removeEventListener('touchstart', this.onTouchStart, false);
             this.container.removeEventListener('touchcancel', this.cancel, false);
 
-            document.removeEventListener("selectionchange", this.onSelection, false);
+            document.removeEventListener('selectionchange', this.onSelection, false);
 
             globalInstances--;
             if (!globalInstances && attachedBodyHandlerHack) {
@@ -612,8 +612,8 @@ window['Slip'] = (function(){
             //check for a scrollable parent
             var scrollContainer = targetNode.parentNode;
             while (scrollContainer){
-              if (scrollContainer.scrollHeight > scrollContainer.clientHeight && window.getComputedStyle(scrollContainer)['overflow-y'] != 'visible') break;
-              else scrollContainer = scrollContainer.parentNode;
+                if (scrollContainer.scrollHeight > scrollContainer.clientHeight && window.getComputedStyle(scrollContainer)['overflow-y'] != 'visible') break;
+                else scrollContainer = scrollContainer.parentNode;
             }
 
             this.target = {
@@ -645,10 +645,10 @@ window['Slip'] = (function(){
                 topOffset = targetRect.top - Math.max(containerRect.top, 0);
 
             if (bottomOffset < triggerOffset){
-              offset = triggerOffset - bottomOffset;
+                offset = triggerOffset - bottomOffset;
             }
             else if (topOffset < triggerOffset){
-              offset = topOffset - triggerOffset;
+                offset = topOffset - triggerOffset;
             }
 
             var prevScrollTop = scrollable.scrollTop;

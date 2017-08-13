@@ -8,7 +8,7 @@ Copyright © 2016 Fernando Trujano
 //--------- js-message-queue ----------//
 'use strict';(function(root,factory){if(typeof define==='function'&&define.amd){define([],factory);}else if(typeof module==='object'&&module.exports){module.exports=factory();}else{root.MessageQueue=factory();}})(this,function(){var RETRY_MAX=5;var queue=[];var sending=false;var timer=null;return{reset:reset,sendAppMessage:sendAppMessage,size:size};function reset(){queue=[];sending=false;}function sendAppMessage(message,ack,nack){if(!isValidMessage(message)){return false;}queue.push({message:message,ack:ack||null,nack:nack||null,attempts:0});setTimeout(function(){sendNextMessage();},1);return true;}function size(){return queue.length;}function isValidMessage(message){if(message!==Object(message)){return false;}var keys=Object.keys(message);if(!keys.length){return false;}for(var k=0;k<keys.length;k+=1){var validKey=/^[0-9a-zA-Z-_]*$/.test(keys[k]);if(!validKey){return false;}var value=message[keys[k]];if(!validValue(value)){return false;}}return true;function validValue(value){switch(typeof value){case'string':return true;case'number':return true;case'object':if(toString.call(value)==='[object Array]'){return true;}}return false;}}function sendNextMessage(){if(sending){return;}var message=queue.shift();if(!message){return;}message.attempts+=1;sending=true;Pebble.sendAppMessage(message.message,ack,nack);timer=setTimeout(function(){timeout();},1e3);function ack(){clearTimeout(timer);setTimeout(function(){sending=false;sendNextMessage();},200);if(message.ack){message.ack.apply(null,arguments);}}function nack(){clearTimeout(timer);if(message.attempts<RETRY_MAX){queue.unshift(message);setTimeout(function(){sending=false;sendNextMessage();},200*message.attempts);}else{if(message.nack){message.nack.apply(null,arguments);}}}function timeout(){setTimeout(function(){sending=false;sendNextMessage();},1e3);if(message.ack){message.ack.apply(null,arguments);}}}});
 
-var VERSION = '4.0';
+var VERSION = '4.1';
 var MESSAGE_DELIMITER = '\t';
 var MESSAGE_DATA_ROOT = 2;
 var MESSAGE_CHUNK_LENGTH = 25;
@@ -20,8 +20,11 @@ var MAX_WORKOUT_NAME_LENGTH = 29;
 //100 for Pebble Time
 
 
-var DEV_MODE = false; //Set to false before Shipping!
-var BASE_URL = 'http://pebble.fernandotrujano.com';
+var DEV_MODE = false; // Set to false before Shipping!
+// var BASE_URL = 'http://pebble.fernandotrujano.com';
+
+// Development version:
+var BASE_URL = 'https://vzvajeleft.localtunnel.me';
 
 
 Pebble.addEventListener('ready', function(){
@@ -38,12 +41,15 @@ Pebble.addEventListener('ready', function(){
 });
 
 Pebble.addEventListener('showConfiguration', function(){
-    console.log('Showing Configuration v' + VERSION);
-    Pebble.openURL(BASE_URL + '/user/home?info=' + Pebble.getAccountToken() + ',' + VERSION);
+    console.log('Showing Configuration v' + VERSION + '--t' + Pebble.getAccountToken());
+    var fullURL = BASE_URL + '/user/home?info=' + Pebble.getAccountToken() + ',' + VERSION;
+    console.log('Opening Pebble Configuration at:');
+    console.log(fullURL);
+    Pebble.openURL(fullURL);
 });
 
 /**
-* Assambles and sends a message to Pebble
+* Assembles and sends a message to Pebble
 * @param: String: messageType: String representing the type of message
 * @param: String: messageHeader:  Delimiter separated message Header
 * @param: Object: message: Object with (key, value) pairs with integer keys starting at MESSAGE_DATA_ROOT
@@ -52,7 +58,12 @@ function sendMessage(messageType, messageHeader, message) {
     message[0] = messageType;
     message[1] = messageHeader;
     console.log('sending message of type: ' + messageType);
-    MessageQueue.sendAppMessage(message, function(e) { console.log('send yes'); }, function(e){console.log('ERROR: ' + e.error.message); console.log('send no'); });
+    MessageQueue.sendAppMessage(message, function() {
+        console.log('send yes');
+    }, function(e) {
+        console.log('ERROR: ' + e.error.message);
+        console.log('send no');
+    });
 }
 /**
 * Constructs a workout message and sends it to Pebble
@@ -62,26 +73,32 @@ function sendMessage(messageType, messageHeader, message) {
 function sendWorkout(workoutName, moves) {
     console.log('sending workout' + workoutName + ' with moves: ' + moves);
 
-
     var messageType = 'MOVES';
     var messageHeader;
-    var i, len_i, j, len_j, chunk, move, message, messageIndex;
-    len_i = moves.length;
+    var chunk, move, message, messageIndex;
+    var len_i = moves.length;
     var numMessagesToSend = Math.max(0,Math.round(len_i/MESSAGE_CHUNK_LENGTH)-1);
 
     //Split each message into chunks.
-    for (i=0; i<len_i; i+=MESSAGE_CHUNK_LENGTH) {
+    for (var i=0; i<len_i; i+=MESSAGE_CHUNK_LENGTH) {
 
-        messageHeader= [safeWorkoutName(workoutName), Math.round(i/MESSAGE_CHUNK_LENGTH), numMessagesToSend].join(MESSAGE_DELIMITER); //Format: | WorkoutName | Message # | Total # of messages to expect |
+        // Format: | WorkoutName | Message # | Total # of messages to expect |
+        messageHeader= [
+            safeWorkoutName(workoutName),
+            Math.round(i/MESSAGE_CHUNK_LENGTH),
+            numMessagesToSend
+        ].join(MESSAGE_DELIMITER);
+
+        // Start moves at MESSAGE_DATA_ROOT to make space for type and header
+        messageIndex = MESSAGE_DATA_ROOT;
         message = {};
-
         chunk = moves.slice(i, i+MESSAGE_CHUNK_LENGTH);
-
-        messageIndex = MESSAGE_DATA_ROOT; //Start moves at MESSAGE_DATA_ROOT to make space for type and header
         //Add each move in chunk to message
-        for (j=0, len_j=chunk.length; j<len_j; j++) {
+        for (var j=0, len_j=chunk.length; j<len_j; j++) {
             move = chunk[j];
-            message[messageIndex] = [safeMoveName(move.name), move.type, move.value].join(MESSAGE_DELIMITER);
+            message[messageIndex] = [
+                safeMoveName(move.name), move.type, move.value
+            ].join(MESSAGE_DELIMITER);
             messageIndex++;
             console.log('constructing message');
         }
@@ -126,13 +143,12 @@ function parseAndAddWorkouts(jsonString) {
 
 
 //After Closing settings view
-//Send Title(key) to watch app (Persiant Memory), and save JSON in Internal Memory
+//Send Title(key) to watch app (Persistent Memory), and save JSON in Internal Memory
 Pebble.addEventListener('webviewclosed',function(e) {
     if (e.response != 'CANCELLED') {
         parseAndAddWorkouts(e.response);
     }
-}
-);
+});
 
 /**
 * Handles message requests from Pebble by finding and sending requested workout
@@ -165,8 +181,7 @@ function workoutCompleted(workoutName){
     if (Pebble.getActiveWatchInfo && Pebble.getActiveWatchInfo().firmware.major >= 3) {
         Pebble.getTimelineToken(function(timelineToken) {
             var url = [
-                BASE_URL,
-                '/user/workout/completed/' ,
+                BASE_URL + '/user/workout/completed/' ,
                 encodeURIComponent(Pebble.getAccountToken()), '/',
                 encodeURIComponent(workoutName), '/',
                 timelineToken
@@ -176,12 +191,15 @@ function workoutCompleted(workoutName){
 
         },function (error) {
             console.log('Error getting timeline token: ' + error);
-        }
-        );
+        });
     }
 
     else {
-        var url = BASE_URL + '/user/workout/completed/' + encodeURIComponent(  Pebble.getAccountToken() )  + '/' + encodeURIComponent(workoutName) + '/none';
+        var url = [
+            BASE_URL, '/user/workout/completed/',
+            encodeURIComponent(Pebble.getAccountToken()), '/',
+            encodeURIComponent(workoutName), '/none'
+        ].join('');
         postRequest(url);
     }
 
@@ -247,4 +265,3 @@ function getWatchPlatform() {
 }
 
 Pebble.addEventListener('appmessage', parsePebbleMessage);
-

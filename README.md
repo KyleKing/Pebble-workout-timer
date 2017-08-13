@@ -2,7 +2,9 @@ Pebble-workout-timer
 ====================
 ![Banner](http://i.imgur.com/jvBNU81.png)
 
-**Update:** I will no longer be updating this app since Pebble has shut down.
+**Update:** Fertogo will no longer be updating this app since Pebble has shut down.
+
+**WhatTheFork:** This fork creates a text-only UI where you can modify the workout JSON file directly. There is a short guide on how to run locally in the [CONTRIBUTING.md](https://github.com/KyleKing/Pebble-workout-timer/blob/master/CONTRIBUTING.md) file.
 
 ## Description
 

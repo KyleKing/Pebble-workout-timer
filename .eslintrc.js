@@ -6,7 +6,8 @@ module.exports = {
         "Pebble": true,
         "localStorage": true,
         "XMLHttpRequest": true,
-        "define": true
+        "define": true,
+        "MessageQueue": true
     },
     "extends": "eslint:recommended",
     "rules": {

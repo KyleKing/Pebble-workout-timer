@@ -3,19 +3,22 @@ import json
 from os import listdir
 from os.path import isfile, join
 
+
 def importUsers(path):
-    allworkouts = [ f for f in listdir(path) if isfile(join(path,f)) ]
+    allworkouts = [f for f in listdir(path) if isfile(join(path, f))]
 
     for token in allworkouts:
         user = token.split(".")[0]
         print user
         fullpath = path + "/" + token
-        if (fullpath == path+"/.DS_Store" or fullpath == path + "/."): continue
+        if (fullpath == path + "/.DS_Store" or fullpath == path + "/."):
+            continue
         # print fullpath
         f = open(fullpath, "r")
 
         workouts = json.loads(f.read())
-        if workouts == "": continue
+        if workouts == "":
+            continue
         # print(workouts)
         # workouts = [{"name":"A","type":"reps","value":34},{"name":"B","type":"time","value":44}]
         # data = {
@@ -27,6 +30,7 @@ def importUsers(path):
         # data = {"user": "asdFadsf", "workouts": workouts}
         sendRequest(json.dumps(data))
 
+
 def sendRequest(body_content):
 
     # print body_content
@@ -35,7 +39,8 @@ def sendRequest(body_content):
 
     if (r.status_code == 200):
         print "success"
-    else :
+    else:
         print("Error^")
+
 
 importUsers('userworkouts')
