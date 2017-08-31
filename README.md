@@ -1,12 +1,12 @@
-Pebble-workout-timer
-====================
-![Banner](http://i.imgur.com/jvBNU81.png)
+# Pebble-workout-timer
 
 **Update:** Fertogo will no longer be updating this app since Pebble has shut down.
 
-**WhatTheFork:** This fork creates a text-only UI where you can modify the workout JSON file directly. There is a short guide on how to run locally in the [CONTRIBUTING.md](https://github.com/KyleKing/Pebble-workout-timer/blob/master/CONTRIBUTING.md) file.
+**WhatTheFork:** This fork creates a text-only UI where you can modify the workout JSON file directly. There is a short guide on how to run locally in the [CONTRIBUTING.md](https://github.com/KyleKing/Pebble-workout-timer/blob/kyleking/dev/CONTRIBUTING.md) file.
 
 ## Description
+
+![Banner](http://i.imgur.com/jvBNU81.png)
 
 Easily create custom interval timers (with names) for your workouts.  This app will time you and alert you when to change moves based on your own workout program. Example: Plank for 2 minutes, 10 biceps curls, pushups for 45 seconds... etc.   You can add create workouts and add moves from your phone or your computer.
 

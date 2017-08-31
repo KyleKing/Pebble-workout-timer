@@ -24,7 +24,7 @@ var DEV_MODE = false; // Set to false before Shipping!
 // var BASE_URL = 'http://pebble.fernandotrujano.com';
 
 // Development version:
-var BASE_URL = 'https://vzvajeleft.localtunnel.me';
+var BASE_URL = 'https://hfckfzchvr.localtunnel.me';
 
 
 Pebble.addEventListener('ready', function(){
