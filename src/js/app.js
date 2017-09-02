@@ -6,6 +6,8 @@ Copyright © 2016 Fernando Trujano
 */
 
 //--------- js-message-queue ----------//
+// https://www.npmjs.com/package/message-queue-pebble
+// Not working, so reverted to Pebble.sendAppMessage
 'use strict';(function(root,factory){if(typeof define==='function'&&define.amd){define([],factory);}else if(typeof module==='object'&&module.exports){module.exports=factory();}else{root.MessageQueue=factory();}})(this,function(){var RETRY_MAX=5;var queue=[];var sending=false;var timer=null;return{reset:reset,sendAppMessage:sendAppMessage,size:size};function reset(){queue=[];sending=false;}function sendAppMessage(message,ack,nack){if(!isValidMessage(message)){return false;}queue.push({message:message,ack:ack||null,nack:nack||null,attempts:0});setTimeout(function(){sendNextMessage();},1);return true;}function size(){return queue.length;}function isValidMessage(message){if(message!==Object(message)){return false;}var keys=Object.keys(message);if(!keys.length){return false;}for(var k=0;k<keys.length;k+=1){var validKey=/^[0-9a-zA-Z-_]*$/.test(keys[k]);if(!validKey){return false;}var value=message[keys[k]];if(!validValue(value)){return false;}}return true;function validValue(value){switch(typeof value){case'string':return true;case'number':return true;case'object':if(toString.call(value)==='[object Array]'){return true;}}return false;}}function sendNextMessage(){if(sending){return;}var message=queue.shift();if(!message){return;}message.attempts+=1;sending=true;Pebble.sendAppMessage(message.message,ack,nack);timer=setTimeout(function(){timeout();},1e3);function ack(){clearTimeout(timer);setTimeout(function(){sending=false;sendNextMessage();},200);if(message.ack){message.ack.apply(null,arguments);}}function nack(){clearTimeout(timer);if(message.attempts<RETRY_MAX){queue.unshift(message);setTimeout(function(){sending=false;sendNextMessage();},200*message.attempts);}else{if(message.nack){message.nack.apply(null,arguments);}}}function timeout(){setTimeout(function(){sending=false;sendNextMessage();},1e3);if(message.ack){message.ack.apply(null,arguments);}}}});
 
 var VERSION = '4.1';
@@ -17,15 +19,14 @@ var MAX_MOVE_NAME_LENGTH = 39;
 var MAX_WORKOUT_NAME_LENGTH = 29;
 
 
-//100 for Pebble Time
+// Who needs a full app when I can just type this?
+var manual_workout = '{"workouts":[{"moves":[{"name":"Move 1","value":6,"type":"time"},{"name":"Move 2","value":7,"type":"time"},{"name":"Move 3","value":7,"type":"time"}],"title":"Just Time"},{"moves":[{"name":"move 1","value":6,"type":"reps"},{"name":"move 2","value":5,"type":"reps"},{"name":"move 3","value":12,"type":"reps"}],"title":"Just reps"},{"moves":[{"name":"move 1","value":16,"type":"time"},{"name":"move 2 reps","value":4,"type":"reps"},{"name":"move 3 time","value":6,"type":"time"},{"name":"move 4 reps","value":14,"type":"reps"}],"title":"Both"}]}';
 
-
-var DEV_MODE = false; // Set to false before Shipping!
-// var BASE_URL = 'http://pebble.fernandotrujano.com';
+var DEV_MODE = true; // Set to true to upload the static workout above
+var BASE_URL = 'http://pebble.fernandotrujano.com';
 
 // Development version:
-var BASE_URL = 'https://hfckfzchvr.localtunnel.me';
-
+// var BASE_URL = 'https://hfckfzchvr.localtunnel.me';
 
 Pebble.addEventListener('ready', function(){
     console.log('JS code running!');
@@ -35,8 +36,8 @@ Pebble.addEventListener('ready', function(){
     else MESSAGE_CHUNK_LENGTH = 100;
 
     if (DEV_MODE) {
-        var sample_workout = '{"workouts":[{"moves":[{"name":"Move 1","value":6,"type":"time"},{"name":"Move 2","value":7,"type":"time"},{"name":"Move 3","value":7,"type":"time"}],"title":"Just Time"},{"moves":[{"name":"move 1","value":6,"type":"reps"},{"name":"move 2","value":5,"type":"reps"},{"name":"move 3","value":12,"type":"reps"}],"title":"Just reps"},{"moves":[{"name":"move 1","value":16,"type":"time"},{"name":"move 2 reps","value":4,"type":"reps"},{"name":"move 3 time","value":6,"type":"time"},{"name":"move 4 reps","value":14,"type":"reps"}],"title":"Both"}]}';
-        parseAndAddWorkouts(sample_workout);
+        console.log('SENT CUSTOM WORKOUT!');
+        parseAndAddWorkouts(manual_workout);
     }
 });
 
@@ -58,7 +59,7 @@ function sendMessage(messageType, messageHeader, message) {
     message[0] = messageType;
     message[1] = messageHeader;
     console.log('sending message of type: ' + messageType);
-    MessageQueue.sendAppMessage(message, function() {
+    Pebble.sendAppMessage(message, function() {
         console.log('send yes');
     }, function(e) {
         console.log('ERROR: ' + e.error.message);
@@ -232,7 +233,9 @@ function parsePebbleMessage(e) {
     console.log('Recieved something on phone---');
     for (var type in e.payload){
         console.log('Received message: ' + e.payload[type] + ' of type: ' + type);
-        if (type === 'WORKOUT') workoutMessageHandler(e.payload[type]);
+        console.log(type === 0);
+        workoutMessageHandler(e.payload[type]);
+        // if (type === 'WORKOUT' || type === 0) workoutMessageHandler(e.payload[type]);
         if (type === 'WORKOUT_DONE') workoutDoneMessageHandler(e.payload[type]);
     }
 }

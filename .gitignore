@@ -9,3 +9,4 @@ dist.zip
 # Ignore installed node modules
 node_modules/
 Online-Workout-Manager/public/javascripts/build.js
+/src/js/workout.json
