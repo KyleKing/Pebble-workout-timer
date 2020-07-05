@@ -1,6 +1,11 @@
+# Guide
+
+Notes on running and editing this fork variant of the Pebble Workout Timer
+
+
 ## Modify Workouts
 
-1. Edit `src/js/workouts.json`. Use `Pretty Json: Minify (compress) JSON` from `Sublime` or `JSON Tools` for `VSCode` (Alt + M to minify)
+1. Edit `src/js/workouts.json`. Use [`Pretty Json: Minify (compress) JSON`](https://packagecontrol.io/packages/Pretty%20JSON) from `Sublime` or [`JSON Tools`](https://marketplace.visualstudio.com/items?itemName=eriklynd.json-tools) for `VSCode` (Alt + M to minify)
 1. Paste into the `manual_workout` variable
 
 ## Basic Install

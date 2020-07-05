@@ -1,4 +1,4 @@
-/* 
+/*
 Main Window | Custom Workout Timer. v4.0
 Displays saved workouts and requests them from phone when selected
 Copyright © 2016 Fernando Trujano
@@ -68,7 +68,7 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      menu_cell_basic_header_draw(ctx, cell_layer, "Add timers from phone!");
+      menu_cell_basic_header_draw(ctx, cell_layer, "Edit app.js to add timers!");
       break;
   }
 }
@@ -91,7 +91,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 
 /**
 * Extra initialization for menu
-*/ 
+*/
 void initialize_menu(void) {
   #ifdef PBL_COLOR
      menu_layer_set_highlight_colors(menu_workouts,GColorCobaltBlue ,GColorWhite );
@@ -149,7 +149,7 @@ void win_main_refresh(void) {
 }
 
 /**
-* Parses workouts stored in persistent storage for easy display by MenuLayer. 
+* Parses workouts stored in persistent storage for easy display by MenuLayer.
 */
 void win_main_parse_workouts() {
   LOG("Win main parse workout");

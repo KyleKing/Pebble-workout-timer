@@ -19,7 +19,7 @@ var MAX_MOVE_NAME_LENGTH = 39;
 var MAX_WORKOUT_NAME_LENGTH = 29;
 
 
-// Who needs a full app when I can just type this?
+// See Contributing.md. Could read the static workout.json file, but much easier just to copy + paste
 var manual_workout = '{"workouts":[{"moves":[{"name":"Move 1","value":6,"type":"time"},{"name":"Move 2","value":7,"type":"time"},{"name":"Move 3","value":7,"type":"time"}],"title":"Just Time"},{"moves":[{"name":"move 1","value":6,"type":"reps"},{"name":"move 2","value":5,"type":"reps"},{"name":"move 3","value":12,"type":"reps"}],"title":"Just reps"},{"moves":[{"name":"move 1","value":16,"type":"time"},{"name":"move 2 reps","value":4,"type":"reps"},{"name":"move 3 time","value":6,"type":"time"},{"name":"move 4 reps","value":14,"type":"reps"}],"title":"Both"}]}';
 
 var DEV_MODE = true; // Set to true to upload the static workout above
