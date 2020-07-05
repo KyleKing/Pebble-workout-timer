@@ -13,11 +13,11 @@ Pebble Custom Workout Timer - Manual Testing Strategy:
             Pause button should pause the timer and indicate that it is paused, after another click the timer should resume.
             Next button should similate the countdown going to 0 and go to the next move.
                 If the current move is paused the next one should not be.
-                
-        Rep Moves: 
-            Starting a rep move should show the move, along with the number of reps left. The only decrements (by 1) when the next button is clicked. 
-            Actionbar should only show stop and next nuttons. 
-            When reps left reach 0, the workout should advance to the next move. 
+
+        Rep Moves:
+            Starting a rep move should show the move, along with the number of reps left. The only decrements (by 1) when the next button is clicked.
+            Actionbar should only show stop and next nuttons.
+            When reps left reach 0, the workout should advance to the next move.
             Stop button should stop the timer and return to the workouts list.
             Long pressing next should skip the move all together
 

@@ -1,8 +1,6 @@
+**KyleKing/Pebble-Workout-Timer**: This fork implements a text/JSON-based editor for workouts. Since Pebble has shutdown, Fertogo will no longer be updating this app, so this fork doesn't require the hosted web app. See the [CONTRIBUTING.md](https://github.com/KyleKing/Pebble-workout-timer/blob/kyleking/dev/CONTRIBUTING.md) file for instructions.
+
 # Pebble-workout-timer
-
-**Update:** Fertogo will no longer be updating this app since Pebble has shut down.
-
-**WhatTheFork:** This fork creates a text-only UI where you can modify the workout JSON file directly. There is a short guide on how to run locally in the [CONTRIBUTING.md](https://github.com/KyleKing/Pebble-workout-timer/blob/kyleking/dev/CONTRIBUTING.md) file.
 
 ## Description
 
@@ -17,7 +15,8 @@ After installing, locate this app on the phone's Pebble app, then click on the s
 ### Code
 
 The online workout manager creates a json file with an array of workouts. Format
-```javascript
+
+```json
 {
     "workouts": [
         {
@@ -45,4 +44,5 @@ The online workout manager creates a json file with an array of workouts. Format
     ]
 }
 ```
+
 All of the JSON is edited locally. When the save button is clicked, the server is updated and the JSON gets sent to the Pebble. `app.js` parses this JSON. The moves get saved on `localStorage` using the title as key. An array of all the titles is then sent to `main.c`, where they are displayed. `main.c` communicates with `app.js` to request moves and times.
